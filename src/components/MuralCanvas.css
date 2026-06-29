@@ -1,0 +1,172 @@
+.mural-container {
+  position: relative;
+  width: 100%;
+  height: calc(100vh - 73px - 165px); /* Full height minus header and footer */
+  min-height: 500px;
+  overflow: hidden;
+  background-color: var(--color-glacial);
+  background-image: 
+    radial-gradient(var(--color-gray-200) 1px, transparent 1px),
+    radial-gradient(var(--color-gray-200) 1px, transparent 1px);
+  background-size: 24px 24px;
+  background-position: 0 0, 12px 12px;
+}
+
+/* Fullscreen mode support */
+.mural-container:fullscreen {
+  width: 100vw !important;
+  height: 100vh !important;
+  max-height: 100vh !important;
+  min-height: 100vh !important;
+  background-color: var(--color-glacial);
+}
+
+.mural-header-info {
+  position: absolute;
+  top: var(--space-md);
+  left: var(--space-md);
+  z-index: 100;
+  background-color: rgba(255, 255, 255, 0.95);
+  padding: var(--space-md);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+  border: 1px solid var(--color-gray-200);
+  backdrop-filter: blur(8px);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+  max-width: 320px;
+  width: calc(100% - 32px);
+  pointer-events: auto; /* Allow clicks on controls */
+}
+
+.mural-header-info h2 {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--color-navy);
+}
+
+.mural-header-info p {
+  font-size: 0.8rem;
+  color: var(--color-gray-500);
+  line-height: 1.4;
+}
+
+.mural-controls {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+  border-top: 1px solid var(--color-gray-200);
+  padding-top: var(--space-sm);
+}
+
+.control-group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+}
+
+.control-label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--color-gray-500);
+  letter-spacing: 0.05em;
+}
+
+/* Sizing buttons container */
+.size-selector {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 4px;
+}
+
+.size-btn {
+  padding: 6px 0;
+  font-size: 0.75rem;
+  font-weight: 600;
+  border-radius: var(--radius-sm);
+  border: 1.5px solid var(--color-gray-200);
+  background-color: var(--color-white);
+  color: var(--color-gray-600);
+  transition: all var(--transition-fast);
+  text-align: center;
+}
+
+.size-btn:hover {
+  border-color: var(--color-gray-300);
+  color: var(--color-navy);
+}
+
+.size-btn.active {
+  background-color: var(--color-cyan-subtle);
+  border-color: var(--color-cyan);
+  color: var(--color-navy);
+  font-weight: 700;
+}
+
+/* Fullscreen toggle button */
+.fullscreen-btn {
+  width: 100%;
+  padding: var(--space-sm) var(--space-md);
+  background-color: var(--color-navy);
+  color: var(--color-white);
+  border-radius: var(--radius-sm);
+  font-size: 0.85rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-xs);
+  transition: all var(--transition-fast);
+  cursor: pointer;
+  margin-top: var(--space-xs);
+}
+
+.fullscreen-btn:hover {
+  background-color: var(--color-navy-light);
+  transform: translateY(-1px);
+}
+
+.fullscreen-btn svg {
+  width: 16px;
+  height: 16px;
+  fill: currentColor;
+}
+
+.mural-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  text-align: center;
+  padding: var(--space-xl);
+  color: var(--color-gray-400);
+}
+
+.mural-empty-icon {
+  font-size: 3rem;
+  margin-bottom: var(--space-md);
+}
+
+.mural-empty h3 {
+  font-size: 1.25rem;
+  margin-bottom: var(--space-xs);
+  color: var(--color-gray-500);
+}
+
+@media (max-width: 480px) {
+  .mural-header-info {
+    max-width: none;
+    width: calc(100% - var(--space-lg));
+    top: var(--space-sm);
+    left: var(--space-sm);
+    padding: var(--space-sm);
+    gap: var(--space-sm);
+  }
+  
+  .mural-container {
+    height: calc(100vh - 65px - 150px);
+  }
+}

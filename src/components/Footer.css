@@ -1,0 +1,70 @@
+.footer {
+  background-color: var(--color-navy);
+  color: var(--color-gray-400);
+  padding: var(--space-2xl) 0 var(--space-lg);
+  margin-top: auto;
+}
+
+.footer-inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-lg);
+  text-align: center;
+}
+
+.footer-logos {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xl);
+}
+
+.footer-logos img {
+  height: 32px;
+  width: auto;
+  object-fit: contain;
+  opacity: 0.85;
+  transition: opacity var(--transition-fast);
+}
+
+.footer-logos img:hover {
+  opacity: 1;
+}
+
+.footer-text {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+}
+
+.footer-text .institution {
+  font-size: 0.85rem;
+  color: var(--color-gray-400);
+  font-weight: 500;
+}
+
+.footer-text .lab {
+  font-size: 0.8rem;
+  color: var(--color-gray-500);
+}
+
+.footer-message {
+  font-size: 0.875rem;
+  color: var(--color-cyan);
+  font-weight: 600;
+  max-width: 400px;
+  line-height: 1.5;
+}
+
+.footer-divider {
+  width: 60px;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--color-cyan), transparent);
+  border: none;
+  opacity: 0.4;
+}
+
+.footer-copyright {
+  font-size: 0.75rem;
+  color: var(--color-gray-500);
+}
