@@ -9,7 +9,7 @@ const submissionsLog: { ip: string; timestamp: number }[] = [];
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { gargalo, nome, email, telefone, perfil, titulo, descricao, _hp, _ts } = body;
+    const { gargalo, nome, email, telefone, perfil, titulo, descricao, aceite_lgpd, _hp, _ts } = body;
 
     // 1. Anti-spam: Honeypot check
     // If the hidden website input field is filled, silently discard or pretend to succeed.
@@ -56,6 +56,13 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    if (!aceite_lgpd) {
+      return NextResponse.json(
+        { error: 'Você deve aceitar o tratamento dos seus dados de acordo com a LGPD.' },
+        { status: 400 }
+      );
+    }
+
     const validGargalos: GargaloSlug[] = [
       'agilidade-processual',
       'acessibilidade-inclusao',
@@ -75,6 +82,16 @@ export async function POST(request: NextRequest) {
     }
 
     // 5. Save to Supabase
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+    const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+
+    if (!supabaseUrl || !supabaseAnonKey || supabaseUrl.includes('your-supabase-url')) {
+      console.error('Supabase URL ou Key não configurada no ambiente.');
+      return NextResponse.json({ 
+        error: 'Erro de configuração: Conexão com o banco de dados não configurada.' 
+      }, { status: 500 });
+    }
+
     const supabase = createServerSupabaseClient();
     
     const { error: dbError } = await supabase.from('ideias').insert({
@@ -85,6 +102,7 @@ export async function POST(request: NextRequest) {
       perfil,
       titulo,
       descricao,
+      aceite_lgpd: !!aceite_lgpd,
     });
 
     if (dbError) {

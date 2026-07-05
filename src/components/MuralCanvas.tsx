@@ -52,6 +52,24 @@ export default function MuralCanvas({ ideias }: MuralCanvasProps) {
     };
   }, []);
 
+  // Exit fullscreen when pressing any key on the keyboard
+  useEffect(() => {
+    if (!isFullscreen) return;
+
+    const handleKeyDown = () => {
+      if (document.fullscreenElement) {
+        document.exitFullscreen().catch((err) => {
+          console.error('Erro ao sair do fullscreen:', err);
+        });
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [isFullscreen]);
+
   useEffect(() => {
     if (!containerRef.current || items.length === 0) return;
 

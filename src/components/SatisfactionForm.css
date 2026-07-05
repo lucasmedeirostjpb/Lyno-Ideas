@@ -1,0 +1,512 @@
+/* ========================================
+   SatisfactionForm Component Styles
+   ======================================== */
+
+.satisfaction-card {
+  background: var(--color-white);
+  border-radius: var(--radius-lg);
+  padding: var(--space-xl);
+  box-shadow: var(--shadow-lg);
+  border: 1px solid var(--color-gray-200);
+  max-width: 620px;
+  width: 100%;
+  margin: 0 auto;
+  animation: scaleIn 0.5s var(--transition-slow) both;
+}
+
+.satisfaction-header {
+  text-align: center;
+  margin-bottom: var(--space-xl);
+}
+
+.satisfaction-header h2 {
+  font-size: clamp(1.5rem, 3vw, 2rem);
+  color: var(--color-navy);
+  margin-bottom: var(--space-sm);
+  background: linear-gradient(135deg, var(--color-navy) 0%, #1e3a8a 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.satisfaction-header p {
+  color: var(--color-gray-500);
+  font-size: 0.95rem;
+}
+
+/* ---------- Face Visualization ---------- */
+.face-visualization-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: var(--space-xl);
+  gap: var(--space-md);
+}
+
+.face-svg {
+  width: 140px;
+  height: 140px;
+  transition: transform var(--transition-base), color var(--transition-base);
+}
+
+.face-svg:hover {
+  transform: scale(1.05);
+}
+
+.face-bg {
+  transition: fill var(--transition-base), stroke var(--transition-base);
+}
+
+.eyebrow, .eye, .eye-arc, .mouth {
+  transition: d 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), 
+              stroke var(--transition-base), 
+              fill var(--transition-base),
+              r var(--transition-base),
+              cx var(--transition-base),
+              cy var(--transition-base);
+}
+
+/* Face Mood Theme Colors */
+.face-sad {
+  color: #dc2626; /* Deep Red for features */
+}
+.face-sad .face-bg {
+  fill: #fff5f5;
+  stroke: #fee2e2;
+  stroke-width: 1.5px;
+}
+
+.face-neutral {
+  color: #d97706; /* Golden/Amber for features */
+}
+.face-neutral .face-bg {
+  fill: #fffbeb;
+  stroke: #fef3c7;
+  stroke-width: 1.5px;
+}
+
+.face-happy {
+  color: #0d9488; /* Teal for features */
+}
+.face-happy .face-bg {
+  fill: #f0fdfa;
+  stroke: #ccfbf1;
+  stroke-width: 1.5px;
+}
+
+/* Score Label below face */
+.score-label {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+
+.score-num {
+  font-size: 2.25rem;
+  font-weight: 800;
+  line-height: 1;
+}
+
+.score-text {
+  font-size: 0.85rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  opacity: 0.85;
+}
+
+/* ---------- Score Selectors ---------- */
+.score-selector-group {
+  margin-bottom: var(--space-xl);
+}
+
+.score-range-input {
+  -webkit-appearance: none;
+  width: 100%;
+  height: 8px;
+  border-radius: var(--radius-full);
+  background: var(--color-gray-200);
+  outline: none;
+  margin-bottom: var(--space-lg);
+  transition: background var(--transition-fast);
+}
+
+/* Custom Slider Thumb styling */
+.score-range-input::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--color-cyan);
+  border: 3px solid var(--color-white);
+  cursor: pointer;
+  box-shadow: var(--shadow-md);
+  transition: transform var(--transition-fast), background var(--transition-fast);
+}
+
+.score-range-input::-webkit-slider-thumb:hover {
+  transform: scale(1.15);
+  background: var(--color-cyan-hover);
+}
+
+.score-range-input::-webkit-slider-thumb:active {
+  transform: scale(0.95);
+}
+
+.score-range-input::-moz-range-thumb {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--color-cyan);
+  border: 3px solid var(--color-white);
+  cursor: pointer;
+  box-shadow: var(--shadow-md);
+  transition: transform var(--transition-fast), background var(--transition-fast);
+}
+
+.score-range-input::-moz-range-thumb:hover {
+  transform: scale(1.15);
+  background: var(--color-cyan-hover);
+}
+
+/* Score Buttons Row */
+.score-buttons {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-xs);
+  flex-wrap: wrap;
+}
+
+.score-btn {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  border: 1.5px solid var(--color-gray-200);
+  background: var(--color-gray-50);
+  color: var(--color-navy);
+  font-weight: 700;
+  font-size: 0.95rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all var(--transition-fast);
+}
+
+.score-btn:hover {
+  border-color: var(--color-cyan);
+  background-color: var(--color-cyan-subtle);
+  transform: translateY(-2px);
+}
+
+.score-btn.active {
+  background-color: var(--color-cyan);
+  border-color: var(--color-cyan);
+  color: var(--color-navy);
+  box-shadow: 0 0 0 3px var(--color-cyan-subtle);
+  transform: translateY(-2px) scale(1.05);
+}
+
+/* ---------- Form General Elements ---------- */
+.satisfaction-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-lg);
+}
+
+.form-label {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--color-navy);
+  margin-bottom: var(--space-xs);
+}
+
+.label-optional {
+  font-weight: 400;
+  color: var(--color-gray-400);
+  font-size: 0.75rem;
+}
+
+.form-input, .form-textarea {
+  width: 100%;
+  padding: var(--space-md);
+  border: 1.5px solid var(--color-gray-200);
+  border-radius: var(--radius-md);
+  background-color: var(--color-gray-50);
+  color: var(--color-navy);
+  font-size: 0.95rem;
+  transition: all var(--transition-fast);
+}
+
+.form-input:focus, .form-textarea:focus {
+  outline: none;
+  border-color: var(--color-cyan);
+  background-color: var(--color-white);
+  box-shadow: 0 0 0 3px var(--color-cyan-subtle);
+}
+
+.form-textarea {
+  min-height: 100px;
+  resize: vertical;
+  line-height: 1.6;
+}
+
+.char-count {
+  font-size: 0.75rem;
+  color: var(--color-gray-400);
+  text-align: right;
+  margin-top: calc(var(--space-xs) * -1);
+}
+
+/* ---------- Personal Details Section ---------- */
+.details-section-title {
+  border-top: 1px solid var(--color-gray-200);
+  padding-top: var(--space-lg);
+  margin-top: var(--space-sm);
+}
+
+.details-section-title h3 {
+  font-size: 1.1rem;
+  color: var(--color-navy);
+  margin-bottom: var(--space-xs);
+}
+
+.details-section-title p {
+  font-size: 0.8rem;
+  color: var(--color-gray-500);
+  margin-bottom: var(--space-sm);
+}
+
+.personal-details-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-md);
+}
+
+.personal-details-grid .full-width {
+  grid-column: span 2;
+}
+
+/* ---------- Consent Checkbox ---------- */
+.consent-checkbox-group {
+  background: var(--color-gray-50);
+  border: 1px solid var(--color-gray-200);
+  border-radius: var(--radius-md);
+  padding: var(--space-md);
+  margin-top: var(--space-xs);
+}
+
+.checkbox-container {
+  display: flex;
+  position: relative;
+  padding-left: 32px;
+  cursor: pointer;
+  user-select: none;
+  font-size: 0.85rem;
+  line-height: 1.5;
+  color: var(--color-gray-700);
+}
+
+/* Hide native checkbox */
+.checkbox-container input {
+  position: absolute;
+  opacity: 0;
+  cursor: pointer;
+  height: 0;
+  width: 0;
+}
+
+/* Custom checkbox mark */
+.checkbox-checkmark {
+  position: absolute;
+  top: 2px;
+  left: 0;
+  height: 20px;
+  width: 20px;
+  background-color: var(--color-white);
+  border: 1.5px solid var(--color-gray-300);
+  border-radius: 4px;
+  transition: all var(--transition-fast);
+}
+
+.checkbox-container:hover input ~ .checkbox-checkmark {
+  border-color: var(--color-cyan);
+  background-color: var(--color-cyan-subtle);
+}
+
+.checkbox-container input:checked ~ .checkbox-checkmark {
+  background-color: var(--color-cyan);
+  border-color: var(--color-cyan);
+}
+
+/* Create the checkmark icon indicator */
+.checkbox-checkmark::after {
+  content: "";
+  position: absolute;
+  display: none;
+}
+
+.checkbox-container input:checked ~ .checkbox-checkmark::after {
+  display: block;
+}
+
+/* Style the checkmark */
+.checkbox-container .checkbox-checkmark::after {
+  left: 6px;
+  top: 2px;
+  width: 5px;
+  height: 10px;
+  border: solid var(--color-navy);
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+}
+
+.checkbox-label .required {
+  color: var(--color-error);
+  font-weight: 700;
+}
+
+/* Focus indicator for keyboard users */
+.checkbox-container input:focus-visible ~ .checkbox-checkmark {
+  box-shadow: 0 0 0 3px var(--color-cyan-subtle);
+  border-color: var(--color-cyan);
+}
+
+/* ---------- Submission Buttons ---------- */
+.form-submit-btn {
+  width: 100%;
+  padding: var(--space-md) var(--space-xl);
+  background-color: var(--color-cyan);
+  color: var(--color-navy);
+  font-weight: 700;
+  font-size: 1rem;
+  border: none;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-sm);
+  min-height: 52px;
+  margin-top: var(--space-sm);
+}
+
+.form-submit-btn:hover:not(:disabled) {
+  background-color: var(--color-cyan-hover);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+.form-submit-btn:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.form-submit-btn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.form-api-error {
+  padding: var(--space-md);
+  background-color: rgba(239, 68, 68, 0.08);
+  border: 1px solid rgba(239, 68, 68, 0.2);
+  border-radius: var(--radius-md);
+  color: var(--color-error);
+  font-size: 0.9rem;
+  text-align: center;
+}
+
+/* ---------- Success Card ----------- */
+.success-container {
+  max-width: 500px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+.success-card {
+  background: var(--color-white);
+  border-radius: var(--radius-lg);
+  padding: var(--space-2xl) var(--space-xl);
+  box-shadow: var(--shadow-lg);
+  border: 1px solid var(--color-gray-200);
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  animation: scaleIn 0.5s var(--transition-slow) both;
+}
+
+.success-icon-wrapper {
+  width: 64px;
+  height: 64px;
+  background-color: #d1fae5;
+  color: var(--color-success);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: var(--space-lg);
+}
+
+.success-check-icon {
+  width: 32px;
+  height: 32px;
+}
+
+.success-card h2 {
+  font-size: 1.75rem;
+  color: var(--color-navy);
+  margin-bottom: var(--space-sm);
+}
+
+.success-msg {
+  color: var(--color-gray-600);
+  margin-bottom: var(--space-xl);
+  font-size: 0.95rem;
+}
+
+.btn-success-close {
+  padding: var(--space-md) var(--space-2xl);
+  background-color: var(--color-navy);
+  color: var(--color-white);
+  font-weight: 700;
+  border-radius: var(--radius-md);
+  transition: all var(--transition-fast);
+}
+
+.btn-success-close:hover {
+  background-color: var(--color-navy-light);
+  transform: translateY(-1px);
+}
+
+/* ---------- Media Queries ---------- */
+@media (max-width: 600px) {
+  .satisfaction-card {
+    padding: var(--space-lg);
+  }
+
+  .personal-details-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .personal-details-grid .full-width {
+    grid-column: span 1;
+  }
+
+  .score-buttons {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: var(--space-sm);
+  }
+  
+  .score-btn {
+    width: 100%;
+    height: 34px;
+  }
+
+  .score-btn:last-child {
+    grid-column: span 2;
+  }
+}

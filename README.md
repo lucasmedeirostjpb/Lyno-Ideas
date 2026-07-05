@@ -37,8 +37,9 @@ Para garantir a qualidade das ideias enviadas e evitar ataques automatizados na 
 
 ## 🗄️ Integração com o Banco de Dados (Supabase)
 
-Para persistir as ideias, configure seu projeto no Supabase e execute a seguinte query no **SQL Editor** do painel do Supabase:
+Para persistir os dados da plataforma, configure seu projeto no Supabase e execute as seguintes queries no **SQL Editor** do painel do Supabase:
 
+### 1. Tabela de Ideias
 ```sql
 CREATE TABLE ideias (
   id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
@@ -56,7 +57,8 @@ CREATE TABLE ideias (
     'pesquisador', 'outro'
   )),
   titulo TEXT NOT NULL,
-  descricao TEXT NOT NULL
+  descricao TEXT NOT NULL,
+  aceite_lgpd BOOLEAN DEFAULT FALSE NOT NULL
 );
 
 -- Habilitar RLS (Row Level Security)
@@ -71,6 +73,24 @@ CREATE POLICY "Qualquer pessoa pode enviar ideia"
 CREATE POLICY "Ideias são públicas para leitura"
   ON ideias FOR SELECT
   USING (true);
+```
+
+### 2. Tabela de Reações de Satisfação
+```sql
+CREATE TABLE satisfacao (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  created_at TIMESTAMPTZ DEFAULT now() NOT NULL,
+  nota INTEGER NOT NULL CHECK (nota >= 0 AND nota <= 10),
+  comentario TEXT
+);
+
+-- Habilitar RLS (Row Level Security)
+ALTER TABLE satisfacao ENABLE ROW LEVEL SECURITY;
+
+-- Permitir INSERT público/anônimo
+CREATE POLICY "Qualquer pessoa pode enviar satisfacao"
+  ON satisfacao FOR INSERT
+  WITH CHECK (true);
 ```
 
 ### Configuração de variáveis de ambiente:

@@ -16,6 +16,7 @@ export default function IdeaForm({ gargaloSlug }: IdeaFormProps) {
   const [perfil, setPerfil] = useState('');
   const [titulo, setTitulo] = useState('');
   const [descricao, setDescricao] = useState('');
+  const [aceiteLgpd, setAceiteLgpd] = useState(false);
   const [loading, setLoading] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
   const [error, setError] = useState('');
@@ -30,6 +31,7 @@ export default function IdeaForm({ gargaloSlug }: IdeaFormProps) {
     setPerfil('');
     setTitulo('');
     setDescricao('');
+    setAceiteLgpd(false);
     setError('');
     formLoadTime.current = Date.now();
   };
@@ -56,6 +58,11 @@ export default function IdeaForm({ gargaloSlug }: IdeaFormProps) {
       return;
     }
 
+    if (!aceiteLgpd) {
+      setError('Você deve concordar com o tratamento de dados (LGPD) para enviar sua ideia.');
+      return;
+    }
+
     setLoading(true);
 
     try {
@@ -70,6 +77,7 @@ export default function IdeaForm({ gargaloSlug }: IdeaFormProps) {
           perfil,
           titulo: titulo.trim(),
           descricao: descricao.trim(),
+          aceite_lgpd: aceiteLgpd,
           _hp: honeypot || '',
           _ts: formLoadTime.current,
         }),
@@ -187,6 +195,22 @@ export default function IdeaForm({ gargaloSlug }: IdeaFormProps) {
               required
             />
             <span className="char-count">{descricao.length}/2000</span>
+          </div>
+
+          {/* Consent Checkbox LGPD */}
+          <div className="form-group consent-checkbox-group">
+            <label className="checkbox-container">
+              <input
+                type="checkbox"
+                checked={aceiteLgpd}
+                onChange={(e) => setAceiteLgpd(e.target.checked)}
+                required
+              />
+              <span className="checkbox-checkmark"></span>
+              <span className="checkbox-label">
+                Concordo com o tratamento dos meus dados pessoais (nome, e-mail e telefone) pelo Lyno (TJPB) para fins de registro e contato referente a esta proposta, em conformidade com a LGPD. <span className="required">*</span>
+              </span>
+            </label>
           </div>
 
           {/* Honeypot field – invisible to users */}

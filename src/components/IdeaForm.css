@@ -146,6 +146,91 @@
   text-align: center;
 }
 
+/* ---------- Consent Checkbox LGPD ---------- */
+.consent-checkbox-group {
+  background: var(--color-gray-50);
+  border: 1px solid var(--color-gray-200);
+  border-radius: var(--radius-md);
+  padding: var(--space-md);
+  margin-top: var(--space-xs);
+}
+
+.checkbox-container {
+  display: flex;
+  position: relative;
+  padding-left: 32px;
+  cursor: pointer;
+  user-select: none;
+  font-size: 0.85rem;
+  line-height: 1.5;
+  color: var(--color-gray-700);
+}
+
+/* Hide native checkbox */
+.checkbox-container input {
+  position: absolute;
+  opacity: 0;
+  cursor: pointer;
+  height: 0;
+  width: 0;
+}
+
+/* Custom checkbox mark */
+.checkbox-checkmark {
+  position: absolute;
+  top: 2px;
+  left: 0;
+  height: 20px;
+  width: 20px;
+  background-color: var(--color-white);
+  border: 1.5px solid var(--color-gray-300);
+  border-radius: 4px;
+  transition: all var(--transition-fast);
+}
+
+.checkbox-container:hover input ~ .checkbox-checkmark {
+  border-color: var(--color-cyan);
+  background-color: var(--color-cyan-subtle);
+}
+
+.checkbox-container input:checked ~ .checkbox-checkmark {
+  background-color: var(--color-cyan);
+  border-color: var(--color-cyan);
+}
+
+/* Create the checkmark icon indicator */
+.checkbox-checkmark::after {
+  content: "";
+  position: absolute;
+  display: none;
+}
+
+.checkbox-container input:checked ~ .checkbox-checkmark::after {
+  display: block;
+}
+
+/* Style the checkmark */
+.checkbox-container .checkbox-checkmark::after {
+  left: 6px;
+  top: 2px;
+  width: 5px;
+  height: 10px;
+  border: solid var(--color-navy);
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+}
+
+.checkbox-label .required {
+  color: var(--color-error);
+  font-weight: 700;
+}
+
+/* Focus indicator for keyboard users */
+.checkbox-container input:focus-visible ~ .checkbox-checkmark {
+  box-shadow: 0 0 0 3px var(--color-cyan-subtle);
+  border-color: var(--color-cyan);
+}
+
 @media (max-width: 640px) {
   .form-row {
     grid-template-columns: 1fr;

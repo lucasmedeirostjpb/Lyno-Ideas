@@ -21,6 +21,10 @@
   background-color: var(--color-glacial);
 }
 
+.mural-container:fullscreen .mural-header-info {
+  display: none;
+}
+
 .mural-header-info {
   position: absolute;
   top: var(--space-md);
