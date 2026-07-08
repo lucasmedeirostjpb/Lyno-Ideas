@@ -2,14 +2,15 @@ import { createServerSupabaseClient } from '@/lib/supabase/server';
 import MuralCanvas from '@/components/MuralCanvas';
 import { IdeiaPublica } from '@/types';
 
-export const revalidate = 30; // Revalidate every 30 seconds
+// Always server-render on demand — never statically cache Supabase data
+export const dynamic = 'force-dynamic';
 
 export const metadata = {
   title: 'Mural de Ideias · 15ª Fetech',
   description: 'Mural público e interativo com as propostas enviadas para os gargalos do Judiciário.',
 };
 
-async function getIdeias(): Promise<IdeiaPublica[]> {
+async function getIdeias(): Promise<{ ideias: IdeiaPublica[]; total: number }> {
   try {
     const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
     const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
@@ -17,27 +18,38 @@ async function getIdeias(): Promise<IdeiaPublica[]> {
     // If environment variables are missing, return empty array for development preview
     if (!supabaseUrl || !supabaseAnonKey || supabaseUrl.includes('your-supabase-url')) {
       console.warn('Supabase URL or Key not set. Returning offline default ideas.');
-      return getMockIdeias();
+      const mock = getMockIdeias();
+      return { ideias: mock, total: mock.length };
     }
 
     const supabase = createServerSupabaseClient();
     
-    // Fetch last 50 ideas public columns only
-    const { data, error } = await supabase
-      .from('ideias')
-      .select('id, nome, titulo, gargalo, created_at')
-      .order('created_at', { ascending: false })
-      .limit(50);
+    // Fetch last 50 ideas and total count in parallel
+    const [listResult, countResult] = await Promise.all([
+      supabase
+        .from('ideias')
+        .select('id, nome, titulo, gargalo, created_at')
+        .order('created_at', { ascending: false })
+        .limit(50),
+      supabase
+        .from('ideias')
+        .select('id', { count: 'exact', head: true }),
+    ]);
 
-    if (error) {
-      console.error('Failed to fetch ideas from Supabase:', error.message);
-      return getMockIdeias();
+    if (listResult.error) {
+      console.error('Failed to fetch ideas from Supabase:', listResult.error.message);
+      const mock = getMockIdeias();
+      return { ideias: mock, total: mock.length };
     }
 
-    return (data || []) as IdeiaPublica[];
+    return {
+      ideias: (listResult.data || []) as IdeiaPublica[],
+      total: countResult.count ?? listResult.data?.length ?? 0,
+    };
   } catch (error) {
     console.error('Error fetching ideas:', error);
-    return getMockIdeias();
+    const mock = getMockIdeias();
+    return { ideias: mock, total: mock.length };
   }
 }
 
@@ -83,11 +95,11 @@ function getMockIdeias(): IdeiaPublica[] {
 }
 
 export default async function MuralPage() {
-  const ideias = await getIdeias();
+  const { ideias, total } = await getIdeias();
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }} className="animate-fade-in">
-      <MuralCanvas ideias={ideias} />
+      <MuralCanvas ideias={ideias} initialTotal={total} />
     </div>
   );
 }

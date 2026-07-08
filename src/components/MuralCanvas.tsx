@@ -1,12 +1,14 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, useCallback } from 'react';
 import { IdeiaPublica } from '@/types';
+import { supabase } from '@/lib/supabase/client';
 import PostIt from './PostIt';
 import './MuralCanvas.css';
 
 interface MuralCanvasProps {
   ideias: IdeiaPublica[];
+  initialTotal?: number;
 }
 
 interface PhysicsItem {
@@ -19,14 +21,25 @@ interface PhysicsItem {
   element: HTMLDivElement | null;
 }
 
-export default function MuralCanvas({ ideias }: MuralCanvasProps) {
+export default function MuralCanvas({ ideias, initialTotal = 0 }: MuralCanvasProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [items, setItems] = useState<IdeiaPublica[]>(ideias);
   const [cardSize, setCardSize] = useState<number>(180);
   const [isFullscreen, setIsFullscreen] = useState<boolean>(false);
+  const [totalCount, setTotalCount] = useState<number>(initialTotal || ideias.length);
+  const [recentSenders, setRecentSenders] = useState<string[]>(
+    ideias.slice(0, 5).map((i) => i.nome)
+  );
+  const [countAnimating, setCountAnimating] = useState<boolean>(false);
   const physicsItemsRef = useRef<PhysicsItem[]>([]);
   const elementsRef = useRef<Map<string, HTMLDivElement>>(new Map());
   const animationFrameId = useRef<number | null>(null);
+  const cardSizeRef = useRef<number>(cardSize);
+
+  // Keep cardSizeRef in sync with cardSize state
+  useEffect(() => {
+    cardSizeRef.current = cardSize;
+  }, [cardSize]);
 
   // Dragging state tracking (since React state is too slow for 60fps drag)
   const activeDragRef = useRef<{
@@ -37,9 +50,66 @@ export default function MuralCanvas({ ideias }: MuralCanvasProps) {
     initialY: number;
   } | null>(null);
 
+  // Initialize physics for a single new item (without resetting existing ones)
+  const initPhysicsItem = useCallback((id: string) => {
+    if (!containerRef.current) return;
+    const rect = containerRef.current.getBoundingClientRect();
+    const size = cardSizeRef.current;
+    const maxX = Math.max(0, rect.width - size);
+    const maxY = Math.max(0, rect.height - size);
+
+    const speedMagnitude = 0.5 + Math.random() * 0.8;
+    const angle = Math.random() * Math.PI * 2;
+
+    const newItem: PhysicsItem = {
+      id,
+      x: Math.random() * maxX,
+      y: Math.random() * maxY,
+      vx: Math.cos(angle) * speedMagnitude,
+      vy: Math.sin(angle) * speedMagnitude,
+      isDragging: false,
+      element: null,
+    };
+
+    physicsItemsRef.current = [newItem, ...physicsItemsRef.current];
+  }, []);
+
+  // Add new sender to the top of the recent list (max 5)
+  const addSender = useCallback((nome: string) => {
+    setRecentSenders((prev) => [nome, ...prev].slice(0, 5));
+  }, []);
+
+  // Animate count badge
+  const animateCount = useCallback(() => {
+    setCountAnimating(true);
+    setTimeout(() => setCountAnimating(false), 600);
+  }, []);
+
+  // Supabase Realtime subscription
   useEffect(() => {
-    setItems(ideias);
-  }, [ideias]);
+    const channel = supabase
+      .channel('public:ideias')
+      .on(
+        'postgres_changes',
+        { event: 'INSERT', schema: 'public', table: 'ideias' },
+        (payload) => {
+          const nova = payload.new as IdeiaPublica;
+          // Add to items list (newest first)
+          setItems((prev) => [nova, ...prev]);
+          // Initialize physics without resetting others
+          initPhysicsItem(nova.id);
+          // Update overlays
+          setTotalCount((c) => c + 1);
+          animateCount();
+          addSender(nova.nome);
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [initPhysicsItem, animateCount, addSender]);
 
   // Sync fullscreen state if changed by Esc key or browser controls
   useEffect(() => {
@@ -79,10 +149,10 @@ export default function MuralCanvas({ ideias }: MuralCanvasProps) {
     const height = rect.height;
 
     // Initialize physical properties for each post-it
-    physicsItemsRef.current = items.map((item, index) => {
+    physicsItemsRef.current = items.map((item) => {
       const maxX = Math.max(0, width - cardSize);
       const maxY = Math.max(0, height - cardSize);
-      
+
       const x = Math.random() * maxX;
       const y = Math.random() * maxY;
 
@@ -118,7 +188,7 @@ export default function MuralCanvas({ ideias }: MuralCanvasProps) {
         item.y += item.vy;
 
         // Collision with left/right walls
-        const maxX = Math.max(0, cWidth - cardSize);
+        const maxX = Math.max(0, cWidth - cardSizeRef.current);
         if (item.x <= 0) {
           item.x = 0;
           item.vx = Math.abs(item.vx);
@@ -128,7 +198,7 @@ export default function MuralCanvas({ ideias }: MuralCanvasProps) {
         }
 
         // Collision with top/bottom walls
-        const maxY = Math.max(0, cHeight - cardSize);
+        const maxY = Math.max(0, cHeight - cardSizeRef.current);
         if (item.y <= 0) {
           item.y = 0;
           item.vy = Math.abs(item.vy);
@@ -170,8 +240,8 @@ export default function MuralCanvas({ ideias }: MuralCanvasProps) {
       // Keep within boundaries
       if (containerRef.current) {
         const cRect = containerRef.current.getBoundingClientRect();
-        newX = Math.max(0, Math.min(newX, cRect.width - cardSize));
-        newY = Math.max(0, Math.min(newY, cRect.height - cardSize));
+        newX = Math.max(0, Math.min(newX, cRect.width - cardSizeRef.current));
+        newY = Math.max(0, Math.min(newY, cRect.height - cardSizeRef.current));
       }
 
       physicalItem.x = newX;
@@ -262,6 +332,7 @@ export default function MuralCanvas({ ideias }: MuralCanvasProps) {
 
   return (
     <div className="mural-container" ref={containerRef}>
+      {/* Header info (hidden in fullscreen) */}
       <div className="mural-header-info">
         <h2>Mural de Ideias – 15ª Fetech</h2>
         <p>Mostrando as últimas {items.length} ideias enviadas. Arraste-as para organizar!</p>
@@ -306,6 +377,31 @@ export default function MuralCanvas({ ideias }: MuralCanvasProps) {
           </button>
         </div>
       </div>
+
+      {/* Response count badge — top right, visible in fullscreen */}
+      <div className={`mural-badge-count ${countAnimating ? 'animating' : ''}`} aria-live="polite">
+        <span className="mural-badge-count__icon">💡</span>
+        <span className="mural-badge-count__number">{totalCount}</span>
+        <span className="mural-badge-count__label">respostas</span>
+      </div>
+
+      {/* Last 5 senders list — bottom right, visible in fullscreen */}
+      {recentSenders.length > 0 && (
+        <div className="mural-badge-senders" aria-label="Últimos participantes">
+          <span className="mural-badge-senders__title"> Últimos participantes</span>
+          <ol className="mural-badge-senders__list">
+            {recentSenders.map((nome, idx) => (
+              <li
+                key={`${nome}-${idx}`}
+                className={`mural-badge-senders__item ${idx === 0 ? 'newest' : ''}`}
+              >
+                <span className="mural-badge-senders__dot" />
+                {nome}
+              </li>
+            ))}
+          </ol>
+        </div>
+      )}
 
       {items.map((item) => (
         <PostIt

@@ -160,6 +160,142 @@
   color: var(--color-gray-500);
 }
 
+/* ──────────────────────────────────────────
+   Badge: response count (top-right)
+────────────────────────────────────────── */
+.mural-badge-count {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  z-index: 200;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  background: rgba(255, 255, 255, 0.75);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  border-radius: 999px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1), 0 1px 3px rgba(0, 0, 0, 0.08);
+  pointer-events: none;
+  transition: transform 0.15s ease;
+}
+
+.mural-badge-count.animating {
+  animation: badge-pulse 0.55s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+}
+
+.mural-badge-count__icon {
+  font-size: 0.95rem;
+  line-height: 1;
+}
+
+.mural-badge-count__number {
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: var(--color-navy, #1a2a4a);
+  letter-spacing: -0.02em;
+  min-width: 1.5ch;
+  text-align: center;
+}
+
+.mural-badge-count__label {
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--color-gray-500, #6b7280);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+@keyframes badge-pulse {
+  0%   { transform: scale(1); }
+  25%  { transform: scale(1.18); }
+  50%  { transform: scale(0.94); }
+  75%  { transform: scale(1.07); }
+  100% { transform: scale(1); }
+}
+
+/* ──────────────────────────────────────────
+   Panel: last 5 senders (bottom-right)
+────────────────────────────────────────── */
+.mural-badge-senders {
+  position: absolute;
+  bottom: 20px;
+  right: 16px;
+  z-index: 200;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 12px 16px;
+  background: rgba(255, 255, 255, 0.78);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid rgba(255, 255, 255, 0.55);
+  border-radius: 14px;
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.1), 0 1px 4px rgba(0, 0, 0, 0.06);
+  pointer-events: none;
+  min-width: 190px;
+  max-width: 240px;
+}
+
+.mural-badge-senders__title {
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: var(--color-gray-500, #6b7280);
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  padding-bottom: 6px;
+  border-bottom: 1px solid rgba(0,0,0,0.07);
+}
+
+.mural-badge-senders__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.mural-badge-senders__item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--color-navy, #1a2a4a);
+  opacity: 0.55;
+  transition: opacity 0.3s ease;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.mural-badge-senders__item.newest {
+  opacity: 1;
+  animation: sender-in 0.4s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.mural-badge-senders__dot {
+  flex-shrink: 0;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--color-gray-300, #d1d5db);
+  transition: background 0.3s ease;
+}
+
+.mural-badge-senders__item.newest .mural-badge-senders__dot {
+  background: var(--color-cyan, #06b6d4);
+  box-shadow: 0 0 0 3px rgba(6, 182, 212, 0.2);
+}
+
+@keyframes sender-in {
+  from { opacity: 0; transform: translateY(-6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
 @media (max-width: 480px) {
   .mural-header-info {
     max-width: none;
@@ -172,5 +308,17 @@
   
   .mural-container {
     height: calc(100vh - 65px - 150px);
+  }
+
+  .mural-badge-count {
+    top: 10px;
+    right: 10px;
+    padding: 6px 10px;
+  }
+
+  .mural-badge-senders {
+    bottom: 12px;
+    right: 10px;
+    max-width: calc(100vw - 20px);
   }
 }
